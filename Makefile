@@ -1,5 +1,8 @@
 all:
-	rebar compile
+	./rebar compile
 
 test: all
-	rebar eunit
+	./rebar eunit
+
+clean:
+	./rebar clean
