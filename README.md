@@ -25,7 +25,7 @@ to register the currently running process.
 
 If the process' queue grows too large, euthanasia will kill it
 
-If the process' memory heap grows too large, euthanasia tries to garbage
+If the process' total memory grows too large, euthanasia tries to garbage
 collect it first, then kills it if garbage collecting doesn't help
 
 NOTE: euthanasia doesn't restart processes, it's supervisors' job. So, make sure
