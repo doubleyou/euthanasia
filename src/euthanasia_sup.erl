@@ -2,7 +2,7 @@
 -behaviour(supervisor).
 
 -export([start_link/0]).
--export([start_child/2]).
+-export([start_child/2, stop_child/1]).
 -export([init/1]).
 
 %%
@@ -10,7 +10,20 @@
 %%
 
 start_child(Pid, Options) ->
-    supervisor:start_child(?MODULE, [Pid, Options]).
+    Spec = {
+        Pid,
+        {euthanasia_monitor, start_link, [Pid, Options]},
+        transient,
+        5000,
+        worker,
+        [euthanasia_monitor]
+    },
+    supervisor:start_child(?MODULE, Spec).
+
+stop_child(Pid) ->
+    supervisor:terminate_child(?MODULE, Pid),
+    supervisor:delete_child(?MODULE, Pid),
+    ok.
 
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
@@ -20,12 +33,4 @@ start_link() ->
 %%
 
 init([]) ->
-    Spec = {
-        undefined,
-        {euthanasia_monitor, start_link, []},
-        transient,
-        5000,
-        worker,
-        [euthanasia_monitor]
-    },
-    {ok, { {simple_one_for_one, 5, 10}, [Spec]} }.
+    {ok, { {one_for_one, 5, 10}, []} }.
